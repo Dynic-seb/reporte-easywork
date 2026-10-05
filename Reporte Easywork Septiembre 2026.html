@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte Meta Ads — Easywork · Septiembre 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=Poppins:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg:#f1f0fb; --surface:#ffffff; --surface2:#f6f5fc;
+    --border:rgba(0,0,0,0.08);
+    --accent:#10b981; --accent2:#ef4444; --accent3:#f59e0b; --accent4:#4A40D4;
+    --text:#0f172a; --muted:#64748b;
+    --good:#059669; --warn:#d97706; --bad:#dc2626;
+    --purple:#4A40D4; --teal:#06b6d4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;}
+
+  /* HEADER */
+  .header{padding:44px 48px 36px;background:linear-gradient(135deg,#0B0730 0%,#4A40D4 65%,#6C63FF 100%);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;}
+  .header-tag{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.65);margin-bottom:8px;}
+  .header-title{font-family:'DM Serif Display',serif;font-size:36px;line-height:1.1;color:#fff;}
+  .header-subtitle{color:rgba(255,255,255,0.65);font-size:14px;margin-top:6px;}
+  .header-date{text-align:right;color:rgba(255,255,255,0.65);font-size:13px;line-height:1.8;}
+  .header-date strong{color:#fff;display:block;font-size:15px;font-weight:500;}
+
+  /* LAYOUT */
+  .main{padding:40px 48px;max-width:1400px;}
+
+  /* TABS */
+  .tabs{display:inline-flex;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:5px;margin-bottom:32px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+  .tab-btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:9px 18px;border-radius:9px;border:none;background:transparent;color:var(--muted);cursor:pointer;}
+  .tab-btn.active{background:#4A40D4;color:#fff;}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  .section-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--text);margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px;}
+  .section-title::before{content:'';display:inline-block;width:4px;height:20px;background:var(--accent4);border-radius:2px;}
+  .section{margin-bottom:48px;}
+
+  /* KPIs */
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin-bottom:48px;}
+  .kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;position:relative;overflow:hidden;transition:box-shadow .2s;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+  .kpi-card:hover{box-shadow:0 6px 20px rgba(0,0,0,0.1);}
+  .kpi-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent-color,var(--accent4));border-radius:14px 14px 0 0;}
+  .kpi-label{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+  .kpi-value{font-family:'Poppins',sans-serif;font-weight:700;font-size:32px;color:var(--text);line-height:1;margin-bottom:6px;}
+  .kpi-sub{font-size:12px;color:var(--muted);}
+  .kpi-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;margin-top:8px;}
+  .badge-good{background:rgba(16,185,129,0.1);color:#059669;}
+  .badge-warn{background:rgba(245,158,11,0.12);color:#d97706;}
+  .badge-bad{background:rgba(239,68,68,0.1);color:#dc2626;}
+  .badge-neutral{background:rgba(74,64,212,0.1);color:#4A40D4;}
+
+  /* CHARTS */
+  .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+  .chart-grid.single{grid-template-columns:1fr;}
+  .chart-grid.three{grid-template-columns:2fr 1fr;align-items:start;}
+  .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+  .chart-card h3{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px;}
+  .chart-card canvas{max-height:260px;}
+
+  /* TABLES */
+  .data-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .data-table th{text-align:left;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:10px 12px;border-bottom:2px solid var(--border);}
+  .data-table td{padding:12px 12px;border-bottom:1px solid rgba(0,0,0,0.05);color:var(--text);vertical-align:middle;}
+  .data-table tr:last-child td{border-bottom:none;}
+  .data-table tr:hover td{background:rgba(74,64,212,0.04);}
+  .num{font-family:'Poppins',sans-serif;font-variant-numeric:tabular-nums;font-weight:500;}
+  .rank{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:rgba(0,0,0,0.06);border-radius:6px;font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;color:var(--muted);flex-shrink:0;}
+  .rank-1{background:rgba(245,158,11,0.15);color:#d97706;}
+  .rank-2{background:rgba(100,116,139,0.12);color:#475569;}
+  .rank-3{background:rgba(249,115,22,0.12);color:#ea580c;}
+  .cpl-good{color:#059669;font-weight:600;}
+  .cpl-mid{color:#d97706;font-weight:600;}
+  .cpl-bad{color:#dc2626;font-weight:600;}
+  .pending{color:var(--muted);font-style:italic;font-weight:400;}
+
+  /* CAMPAIGNS */
+  .campaign-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin-bottom:20px;}
+  .campaign-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+  .campaign-card h4{font-size:13px;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.4;padding-bottom:12px;border-bottom:1px solid var(--border);}
+  .campaign-stat-row{display:flex;justify-content:space-between;gap:14px;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.04);}
+  .campaign-stat-row:last-child{border-bottom:none;}
+  .campaign-stat-row .label{color:var(--muted);}
+  .campaign-stat-row .value{font-weight:500;text-align:right;}
+
+  /* INSIGHTS */
+  .insight-box{background:rgba(74,64,212,0.05);border:1px solid rgba(74,64,212,0.2);border-radius:10px;padding:14px 18px;margin-top:16px;font-size:13px;color:var(--text);line-height:1.6;}
+  .insight-box strong{color:#4A40D4;}
+  .insight-warn{background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.25);}
+  .insight-warn strong{color:#d97706;}
+  .insight-bad{background:rgba(239,68,68,0.05);border-color:rgba(239,68,68,0.2);}
+  .insight-bad strong{color:#dc2626;}
+  .insight-good{background:rgba(16,185,129,0.06);border-color:rgba(16,185,129,0.25);}
+  .insight-good strong{color:#059669;}
+
+  /* PILLS */
+  .camp-pill{display:inline-block;padding:2px 8px;border-radius:6px;background:rgba(74,64,212,0.1);color:#4A40D4;font-size:10px;font-weight:600;margin-top:3px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .adset-pill{display:inline-block;padding:2px 8px;border-radius:6px;background:rgba(0,0,0,0.06);color:var(--muted);font-size:10px;font-weight:500;margin-top:2px;}
+
+  /* ALERT */
+  .alert-banner{background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.25);border-radius:14px;padding:20px 24px;margin-bottom:32px;display:flex;gap:16px;align-items:flex-start;}
+  .alert-icon{font-size:22px;line-height:1;}
+  .alert-body h4{font-size:14px;font-weight:600;color:#d97706;margin-bottom:6px;}
+  .alert-body p{font-size:13px;color:var(--muted);line-height:1.6;}
+  .alert-body strong{color:var(--text);}
+
+  /* COMPARE TABLE */
+  .compare-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+  .compare-card h4{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;}
+  .compare-row{display:grid;grid-template-columns:1.6fr 1fr 1fr 100px;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.05);}
+  .compare-row:last-child{border-bottom:none;}
+  .compare-label{font-size:12px;color:var(--muted);}
+  .compare-v1{font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;white-space:nowrap;text-align:center;}
+  .compare-v2{font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;white-space:nowrap;text-align:center;}
+  .trend-arrow{font-family:'Poppins',sans-serif;font-size:11px;padding:3px 8px;border-radius:4px;white-space:nowrap;font-weight:600;justify-self:center;}
+  .arrow-bad{background:rgba(239,68,68,0.1);color:#dc2626;}
+  .arrow-good{background:rgba(16,185,129,0.1);color:#059669;}
+  .arrow-warn{background:rgba(245,158,11,0.12);color:#d97706;}
+  .compare-header-row{display:grid;grid-template-columns:1.6fr 1fr 1fr 100px;gap:8px;padding:0 0 8px;border-bottom:2px solid var(--border);margin-bottom:4px;}
+  .compare-header-row span{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);text-align:center;}
+  .compare-header-row span:first-child{text-align:left;}
+
+  @media(max-width:768px){
+    .header,.main{padding:24px;}
+    .chart-grid,.chart-grid.three{grid-template-columns:1fr !important;}
+    .kpi-grid{grid-template-columns:repeat(2,1fr);}
+    .compare-row,.compare-header-row{grid-template-columns:1fr 1fr;}
+  }
+
+  /* ACTIONS */
+  .action-list{display:grid;gap:12px;}
+  .action-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;display:flex;gap:16px;align-items:flex-start;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+  .action-num{flex-shrink:0;width:26px;height:26px;border-radius:8px;background:rgba(74,64,212,0.12);color:#4A40D4;font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+  .action-item h5{font-size:13.5px;font-weight:600;margin-bottom:4px;}
+  .action-item p{font-size:12.5px;color:var(--muted);line-height:1.6;}
+
+  /* WEEK HERO — comparación semanal */
+  .week-hero{background:linear-gradient(135deg,#064e3b 0%,#059669 55%,#10b981 100%);border-radius:16px;padding:28px 32px;margin-bottom:22px;color:#fff;}
+  .week-hero .wh-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.7);margin-bottom:8px;}
+  .week-hero h3{font-family:'DM Serif Display',serif;font-size:26px;line-height:1.25;margin-bottom:10px;color:#fff;font-weight:400;}
+  .week-hero p{font-size:13.5px;line-height:1.65;color:rgba(255,255,255,0.85);max-width:900px;}
+  .week-hero strong{color:#fff;font-weight:600;}
+  .wh-stats{display:flex;gap:34px;flex-wrap:wrap;margin-top:22px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.2);}
+  .wh-stat .v{font-family:'Poppins',sans-serif;font-weight:700;font-size:30px;line-height:1.1;color:#fff;}
+  .wh-stat .l{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.7);margin-top:4px;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-tag">dynic · Meta Ads Report</div>
+    <h1 class="header-title">Easywork</h1>
+    <p class="header-subtitle">Reporte mensual · Septiembre 2026 y primeros días de octubre</p>
+  </div>
+  <div class="header-date">
+    <strong>Datos al 5 de octubre 2026</strong>
+    Cierre de septiembre: 7 — 30 sept<br>Generado por dynic
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="sep" onclick="showTab('sep')">Cierre · Septiembre</button>
+    <button class="tab-btn" data-tab="oct" onclick="showTab('oct')">Octubre · primeros días</button>
+  </div>
+
+  <!-- ═══════════════ PESTAÑA SEPTIEMBRE ═══════════════ -->
+  <div class="tab-panel active" id="tab-sep">
+
+    <div class="alert-banner">
+      <div class="alert-icon">🚀</div>
+      <div class="alert-body">
+        <h4>Septiembre cerró con 10 leads a $19,45 — la última semana bajó el costo por lead 11,5%</h4>
+        <p>La campaña de captación arrancó el 15/09, después de 8 días de calentamiento de cuenta. En ese tramo generó <strong>10 leads</strong> con <strong>$194,54 USD</strong> invertidos. La última semana completa (21–27/09) cerró en 4 leads a $20,75, contra 3 leads a $23,45 de la semana previa. Jalisco y el anuncio "Dirigir a Ciegas" concentran la mayor parte de los resultados.</p>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card" style="--accent-color:#4A40D4">
+        <div class="kpi-label">Leads generados</div>
+        <div class="kpi-value">10</div>
+        <div class="kpi-sub">Formularios completados · campaña de captación</div>
+        <div class="kpi-badge badge-neutral">16 días de campaña activa (15–30/09)</div>
+      </div>
+      <div class="kpi-card" style="--accent-color:#4A40D4">
+        <div class="kpi-label">Presupuesto total</div>
+        <div class="kpi-value">$215.39</div>
+        <div class="kpi-sub">USD · 7–30 sept · $194.54 captación + $20.85 calentamiento</div>
+        <div class="kpi-badge badge-neutral">90% del gasto en campaña de leads</div>
+      </div>
+      <div class="kpi-card" style="--accent-color:#10b981">
+        <div class="kpi-label">Costo por lead (CPL)</div>
+        <div class="kpi-value" style="color:#d97706">$19.45</div>
+        <div class="kpi-sub">USD · sólo campaña de formulario</div>
+        <div class="kpi-badge badge-good">↓ -11.5% última semana vs. previa</div>
+      </div>
+      <div class="kpi-card" style="--accent-color:#3b82f6">
+        <div class="kpi-label">CTR único (enlace)</div>
+        <div class="kpi-value">1.88%</div>
+        <div class="kpi-sub">Campaña de captación · 1–30 sept</div>
+      </div>
+      <div class="kpi-card" style="--accent-color:#06b6d4">
+        <div class="kpi-label">Impresiones</div>
+        <div class="kpi-value">13.871</div>
+        <div class="kpi-sub">Campaña de captación · 16 días activos</div>
+        <div class="kpi-badge badge-neutral">CPM $14.02</div>
+      </div>
+      <div class="kpi-card" style="--accent-color:#3b82f6">
+        <div class="kpi-label">Clics al enlace</div>
+        <div class="kpi-value">101</div>
+        <div class="kpi-sub">Campaña de captación · CPC $1.93</div>
+        <div class="kpi-badge badge-neutral">9.9% de los clics termina en lead</div>
+      </div>
+    </div>
+
+    <!-- CAMPAÑAS ACTIVAS -->
+    <div class="section">
+      <div class="section-title">Campañas y su desglose</div>
+      <div class="campaign-grid">
+        <div class="campaign-card">
+          <h4>TOFU - [Form][Primer Prueba - Dolores][SEP] <span class="camp-pill">Activa · genera leads</span></h4>
+          <div class="campaign-stat-row"><span class="label">Leads</span><span class="value">10 (100%)</span></div>
+          <div class="campaign-stat-row"><span class="label">Inversión</span><span class="value">$194.54 USD</span></div>
+          <div class="campaign-stat-row"><span class="label">Costo por lead</span><span class="value cpl-mid">$19.45 USD</span></div>
+          <div class="campaign-stat-row"><span class="label">Última semana (21–27/09)</span><span class="value cpl-good">4 leads · $20.75</span></div>
+          <div class="campaign-stat-row"><span class="label">Estado al 30/09</span><span class="value">3 conjuntos · 5 anuncios (2 con entrega activa)</span></div>
+        </div>
+        <div class="campaign-card">
+          <h4>Tráfico IG - [calentamiento cuenta] - SEP <span class="adset-pill">Objetivo distinto</span></h4>
+          <div class="campaign-stat-row"><span class="label">Impresiones</span><span class="value">30.673</span></div>
+          <div class="campaign-stat-row"><span class="label">Clics (visita a perfil)</span><span class="value">486 · CTR 1.58%</span></div>
+          <div class="campaign-stat-row"><span class="label">Inversión</span><span class="value">$20.85 USD</span></div>
+          <div class="campaign-stat-row"><span class="label">Estado</span><span class="value">Activa 7–21/09 · sin entrega desde el 21/09</span></div>
+        </div>
+      </div>
+      <div class="insight-box insight-good">
+        <strong>La cuenta tiene sólo dos campañas, y la que importa concentra el 100% de los leads.</strong> TOFU - Form se llevó el 90% del presupuesto del mes y produjo los 10 leads. Tráfico IG cumplió su función de calentar una cuenta nueva antes de lanzar a conversión directa: corrió del 7 al 21/09 y dejó de entregar justo cuando la campaña de captación tomó ritmo.
+      </div>
+    </div>
+
+    <!-- ANUNCIOS CON MEJORES RESULTADOS -->
+    <div class="section">
+      <div class="section-title">Anuncios con mejores resultados</div>
+      <div class="chart-grid three">
+        <div class="chart-card">
+          <h3>Anuncios de la campaña de captación — ordenados por costo por lead</h3>
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Anuncio</th><th>Leads</th><th>CPL (USD)</th><th>Gasto (USD)</th><th>CTR (enlace)</th><th>CTR único</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><span class="rank rank-1">1</span></td>
+                <td><strong>Dirigir a Ciegas (Decisiones con Datos)</strong><br><span class="camp-pill">Varios conjuntos</span></td>
+                <td class="num">5</td><td class="num cpl-good">$17.39</td><td class="num">$86.95</td><td class="num">0.68%</td><td class="pending">pendiente</td>
+              </tr>
+              <tr>
+                <td><span class="rank rank-2">2</span></td>
+                <td><strong>Tamaño Real de tu Cartera (Pólizas Vigentes)</strong><br><span class="camp-pill">[pyme+insurance][28-60] MX</span></td>
+                <td class="num">5</td><td class="num cpl-mid">$19.08</td><td class="num">$95.38</td><td class="num">0.80%</td><td class="pending">pendiente</td>
+              </tr>
+              <tr>
+                <td><span class="rank">—</span></td>
+                <td><strong>Pronóstico de Cobranza</strong><br><span class="adset-pill">Activo · sin leads aún</span></td>
+                <td class="num">0</td><td class="num">—</td><td class="num">$4.37</td><td class="num">0.72%</td><td class="pending">pendiente</td>
+              </tr>
+              <tr>
+                <td><span class="rank">—</span></td>
+                <td><strong>Si se va tu mejor agente</strong><br><span class="adset-pill">Inactivo desde 19/09</span></td>
+                <td class="num">0</td><td class="num">—</td><td class="num">$6.43</td><td class="num">0.24%</td><td class="pending">pendiente</td>
+              </tr>
+              <tr>
+                <td><span class="rank">—</span></td>
+                <td><strong>Rendimiento del Equipo</strong><br><span class="adset-pill">Activo · sin leads aún</span></td>
+                <td class="num">0</td><td class="num">—</td><td class="num">$1.41</td><td class="num">1.47%</td><td class="pending">pendiente</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="chart-card">
+          <h3>Costo por lead (USD)</h3>
+          <canvas id="ewAdsCPL"></canvas>
+        </div>
+      </div>
+      <div class="insight-box insight-good">
+        <strong>Dos anuncios concentran los 10 leads del mes.</strong> "Dirigir a Ciegas" es el más eficiente: 5 leads a $17.39, repartidos en dos conjuntos de anuncios. "Tamaño Real de tu Cartera" sostiene 5 leads a $19.08, todos en un mismo conjunto. Juntos explican el 94% del gasto de la campaña.
+      </div>
+    </div>
+
+    <!-- ZONA GEOGRÁFICA -->
+    <div class="section">
+      <div class="section-title">Zona geográfica con mejores resultados</div>
+      <div class="chart-grid three">
+        <div class="chart-card">
+          <h3>Leads por estado — septiembre (campaña de captación)</h3>
+          <canvas id="ewRegion"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Detalle por estado</h3>
+          <table class="data-table">
+            <thead><tr><th>Estado</th><th>Leads</th><th>Gasto</th><th>CPL</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Jalisco</strong></td><td class="num">5</td><td class="num">$93.44</td><td class="num cpl-good">$18.69</td></tr>
+              <tr><td><strong>Distrito Federal</strong></td><td class="num">2</td><td class="num">$30.49</td><td class="num cpl-good">$15.25</td></tr>
+              <tr><td><strong>Nuevo León</strong></td><td class="num">1</td><td class="num">$8.84</td><td class="num cpl-good">$8.84</td></tr>
+              <tr><td><strong>Baja California</strong></td><td class="num">1</td><td class="num">$2.95</td><td class="num cpl-good">$2.95</td></tr>
+              <tr><td><strong>San Luis Potosí</strong></td><td class="num">1</td><td class="num">$1.21</td><td class="num cpl-good">$1.21</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="insight-box insight-good">
+        <strong>Jalisco es la zona con más respaldo.</strong> Concentra 5 de los 10 leads (50%) a $18.69, y Distrito Federal suma 2 más a $15.25. Nuevo León, Baja California y San Luis Potosí aportan un lead cada uno, con muestras de un solo evento: todavía no son un patrón.
+      </div>
+    </div>
+
+    <!-- EVOLUCIÓN DIARIA -->
+    <div class="section">
+      <div class="section-title">Evolución diaria: inversión y leads</div>
+      <div class="chart-grid single">
+        <div class="chart-card">
+          <h3>Inversión diaria y leads — Septiembre 2026 (7 al 30)</h3>
+          <canvas id="ewEvolucion"></canvas>
+        </div>
+      </div>
+      <div class="insight-box">
+        Los primeros 8 días (7 al 14) no tuvieron gasto en la campaña de captación: fue el tramo de calentamiento de cuenta. Desde el 15/09 el ritmo diario ronda entre $7 y $18 de inversión. Los leads aparecen distribuidos entre 0 y 2 por día, sin una racha concentrada.
+      </div>
+    </div>
+
+    <!-- SEMANA ACTUAL VS SEMANA PREVIA -->
+    <div class="section">
+      <div class="section-title">Cómo venimos: última semana completa vs. la anterior</div>
+
+      <div class="week-hero">
+        <div class="wh-tag">21 al 27 de septiembre · vs. 14 al 20 de septiembre</div>
+        <h3>Segunda semana completa de campaña: 4 leads a $20,75, el mejor CPL hasta ahora</h3>
+        <p>Con un 18% más de presupuesto, la cuenta sumó un lead adicional y bajó el costo por lead un 11,5%. Es una dirección correcta, pero con 4 leads por semana el margen de error de cualquier conclusión sigue siendo alto.</p>
+        <div class="wh-stats">
+          <div class="wh-stat"><div class="v">4</div><div class="l">Leads (vs. 3)</div></div>
+          <div class="wh-stat"><div class="v">$20.75</div><div class="l">CPL (vs. $23.45)</div></div>
+          <div class="wh-stat"><div class="v">$83.00</div><div class="l">Gasto (vs. $70.35)</div></div>
+          <div class="wh-stat"><div class="v">1.29%</div><div class="l">CTR único (vs. 1.65%)</div></div>
+        </div>
+      </div>
+
+      <div class="chart-grid three">
+        <div class="chart-card">
+          <h3>Leads diarios — últimos 14 días</h3>
+          <canvas id="ew14d"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Variación semana a semana</h3>
+          <div class="compare-card" style="border:none;box-shadow:none;padding:0;">
+            <div class="compare-header-row">
+              <span>Métrica</span>
+              <span style="color:#d97706">14–20 sept</span>
+              <span style="color:#059669">21–27 sept</span>
+              <span>Var.</span>
+            </div>
+            <div class="compare-row">
+              <span class="compare-label">Leads</span>
+              <span class="compare-v1" style="color:#d97706">3</span>
+              <span class="compare-v2" style="color:#059669">4</span>
+              <span class="trend-arrow arrow-good">↑ +33.3%</span>
+            </div>
+            <div class="compare-row">
+              <span class="compare-label">Costo por lead</span>
+              <span class="compare-v1" style="color:#d97706">$23.45</span>
+              <span class="compare-v2" style="color:#059669">$20.75</span>
+              <span class="trend-arrow arrow-good">↓ -11.5%</span>
+            </div>
+            <div class="compare-row">
+              <span class="compare-label">Inversión</span>
+              <span class="compare-v1" style="color:#d97706">$70.35</span>
+              <span class="compare-v2" style="color:#059669">$83.00</span>
+              <span class="trend-arrow arrow-warn">↑ +18.0%</span>
+            </div>
+            <div class="compare-row">
+              <span class="compare-label">Impresiones</span>
+              <span class="compare-v1" style="color:#d97706">4.966</span>
+              <span class="compare-v2" style="color:#059669">5.812</span>
+              <span class="trend-arrow arrow-warn">↑ +17.0%</span>
+            </div>
+            <div class="compare-row">
+              <span class="compare-label">Clics al enlace</span>
+              <span class="compare-v1" style="color:#d97706">39</span>
+              <span class="compare-v2" style="color:#059669">42</span>
+              <span class="trend-arrow arrow-good">↑ +7.7%</span>
+            </div>
+            <div class="compare-row">
+              <span class="compare-label">CTR único al enlace</span>
+              <span class="compare-v1" style="color:#d97706">1.65%</span>
+              <span class="compare-v2" style="color:#dc2626">1.29%</span>
+              <span class="trend-arrow arrow-bad">↓ -21.8%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════ PESTAÑA OCTUBRE ═══════════════ -->
+  <div class="tab-panel" id="tab-oct">
+
+    <div class="alert-banner">
+      <div class="alert-icon">📊</div>
+      <div class="alert-body">
+        <h4>Primeros 5 días de octubre: 3 leads a $18,49 — y la última semana sigue mejorando</h4>
+        <p>Del 1 al 5 de octubre la campaña de captación invirtió <strong>$55,48 USD</strong> y generó <strong>3 leads</strong>, a un costo por lead de <strong>$18,49</strong>, un 4,9% menos que el promedio de septiembre. La semana del 28/09 al 4/10 cerró con 6 leads a $15,07, contra 4 leads a $20,75 de la semana anterior. Es una tendencia alentadora, pero todavía con muy pocos leads para darla por consolidada.</p>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card" style="--accent-color:#4A40D4">
+        <div class="kpi-label">Leads generados</div>
+        <div class="kpi-value">3</div>
+        <div class="kpi-sub">Formularios completados · 1–5 oct</div>
+        <div class="kpi-badge badge-neutral">0.6 leads por día</div>
+      </div>
+      <div class="kpi-card" style="--accent-color:#4A40D4">
+        <div class="kpi-label">Presupuesto invertido</div>
+        <div class="kpi-value">$55.48</div>
+        <div class="kpi-sub">USD · 1–5 oct · sólo campaña de captación</div>
+        <div class="kpi-badge badge-neutral">~$11.10 por día</div>
+      </div>
+      <div class="kpi-card" style="--accent-color:#10b981">
+        <div class="kpi-label">Costo por lead (CPL)</div>
+        <div class="kpi-value" style="color:#059669">$18.49</div>
+        <div class="kpi-sub">USD · 1–5 oct</div>
+        <div class="kpi-badge badge-good">↓ -4.9% vs. CPL de septiembre ($19.45)</div>
+      </div>
+      <div class="kpi-card" style="--accent-color:#3b82f6">
+        <div class="kpi-label">CTR único (enlace)</div>
+        <div class="kpi-value">1.22%</div>
+        <div class="kpi-sub">Campaña de captación · 1–5 oct</div>
+      </div>
+      <div class="kpi-card" style="--accent-color:#06b6d4">
+        <div class="kpi-label">Impresiones</div>
+        <div class="kpi-value">3.409</div>
+        <div class="kpi-sub">Campaña de captación · 1–5 oct</div>
+        <div class="kpi-badge badge-neutral">CPM $16.25</div>
+      </div>
+      <div class="kpi-card" style="--accent-color:#3b82f6">
+        <div class="kpi-label">Clics al enlace</div>
+        <div class="kpi-value">27</div>
+        <div class="kpi-sub">Campaña de captación · CPC $2.05</div>
+        <div class="kpi-badge badge-neutral">11.1% de los clics termina en lead</div>
+      </div>
+    </div>
+
+    <!-- EVOLUCIÓN DIARIA -->
+    <div class="section">
+      <div class="section-title">Evolución diaria: 21 de septiembre al 5 de octubre</div>
+      <div class="chart-grid single">
+        <div class="chart-card">
+          <h3>Inversión diaria y leads</h3>
+          <canvas id="ewEvolucionOct"></canvas>
+        </div>
+      </div>
+      <div class="insight-box">
+        Octubre arrancó con un ritmo de inversión parecido al de la última semana de septiembre, entre $6 y $18 por día. Los 3 leads de la primera semana de octubre llegaron los días 3 y 4, con 1 y 2 respectivamente.
+      </div>
+    </div>
+
+    <!-- COMO VAMOS -->
+    <div class="section">
+      <div class="section-title">Cómo vamos: semana actual vs. la anterior</div>
+
+      <div class="week-hero">
+        <div class="wh-tag">28 de septiembre al 4 de octubre · vs. 21 al 27 de septiembre</div>
+        <h3>6 leads a $15,07 — la mejor semana del mes en costo por lead</h3>
+        <p>Con un 9% más de presupuesto, la cuenta pasó de 4 a 6 leads y bajó el costo por lead un 27%. Es la mejora más clara desde que arrancó la campaña, pero con 6 leads por semana conviene leer una semana más antes de darla por tendencia.</p>
+        <div class="wh-stats">
+          <div class="wh-stat"><div class="v">6</div><div class="l">Leads (vs. 4)</div></div>
+          <div class="wh-stat"><div class="v">$15.07</div><div class="l">CPL (vs. $20.75)</div></div>
+          <div class="wh-stat"><div class="v">$90.43</div><div class="l">Gasto (vs. $83.00)</div></div>
+          <div class="wh-stat"><div class="v">1.28%</div><div class="l">CTR único (vs. 1.29%)</div></div>
+        </div>
+      </div>
+
+      <div class="chart-grid three">
+        <div class="chart-card">
+          <h3>Leads diarios — últimos 14 días</h3>
+          <canvas id="ew14dOct"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>Variación semana a semana</h3>
+          <div class="compare-card" style="border:none;box-shadow:none;padding:0;">
+            <div class="compare-header-row">
+              <span>Métrica</span>
+              <span style="color:#d97706">21–27 sept</span>
+              <span style="color:#059669">28 sep–4 oct</span>
+              <span>Var.</span>
+            </div>
+            <div class="compare-row">
+              <span class="compare-label">Leads</span>
+              <span class="compare-v1" style="color:#d97706">4</span>
+              <span class="compare-v2" style="color:#059669">6</span>
+              <span class="trend-arrow arrow-good">↑ +50.0%</span>
+            </div>
+            <div class="compare-row">
+              <span class="compare-label">Costo por lead</span>
+              <span class="compare-v1" style="color:#d97706">$20.75</span>
+              <span class="compare-v2" style="color:#059669">$15.07</span>
+              <span class="trend-arrow arrow-good">↓ -27.4%</span>
+            </div>
+            <div class="compare-row">
+              <span class="compare-label">Inversión</span>
+              <span class="compare-v1" style="color:#d97706">$83.00</span>
+              <span class="compare-v2" style="color:#059669">$90.43</span>
+              <span class="trend-arrow arrow-warn">↑ +9.0%</span>
+            </div>
+            <div class="compare-row">
+              <span class="compare-label">Impresiones</span>
+              <span class="compare-v1" style="color:#d97706">5.812</span>
+              <span class="compare-v2" style="color:#059669">6.095</span>
+              <span class="trend-arrow arrow-warn">↑ +4.9%</span>
+            </div>
+            <div class="compare-row">
+              <span class="compare-label">Clics al enlace</span>
+              <span class="compare-v1" style="color:#d97706">42</span>
+              <span class="compare-v2" style="color:#059669">44</span>
+              <span class="trend-arrow arrow-good">↑ +4.8%</span>
+            </div>
+            <div class="compare-row">
+              <span class="compare-label">CTR único al enlace</span>
+              <span class="compare-v1" style="color:#d97706">1.29%</span>
+              <span class="compare-v2" style="color:#d97706">1.28%</span>
+              <span class="trend-arrow arrow-warn">↓ -0.8%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+// ─── Pestañas ────────────────────────────────────────────────────────────────
+function showTab(name){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+name));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+  if(name==='oct' && !octReady){ initOct(); octReady=true; }
+}
+
+// ─── Configuración global Chart.js ───────────────────────────────────────────
+const ACCENT='#10b981', ACCENT2='#ef4444', ACCENT3='#f59e0b', ACCENT4='#4A40D4';
+const TEXT='#0f172a';
+Chart.defaults.color='#64748b';
+Chart.defaults.font.family="'Poppins', sans-serif";
+Chart.defaults.font.size=12;
+const grid='rgba(0,0,0,0.06)';
+const tt={backgroundColor:'#ffffff',borderColor:'rgba(0,0,0,0.1)',borderWidth:1,titleColor:TEXT,bodyColor:'#64748b',padding:10};
+const usd=v=>'$'+Number(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+let octReady=false;
+
+// ─── Datos septiembre (7 al 30) ──────────────────────────────────────────────
+const dailySep=[
+  {d:'07/09',l:0,gasto:0},{d:'08/09',l:0,gasto:0},{d:'09/09',l:0,gasto:0},{d:'10/09',l:0,gasto:0},
+  {d:'11/09',l:0,gasto:0},{d:'12/09',l:0,gasto:0},{d:'13/09',l:0,gasto:0},{d:'14/09',l:0,gasto:0},
+  {d:'15/09',l:0,gasto:6.85},{d:'16/09',l:1,gasto:14.71},{d:'17/09',l:0,gasto:9.61},{d:'18/09',l:0,gasto:11.64},
+  {d:'19/09',l:1,gasto:13.59},{d:'20/09',l:1,gasto:13.95},{d:'21/09',l:0,gasto:7.63},{d:'22/09',l:0,gasto:6.72},
+  {d:'23/09',l:1,gasto:12.78},{d:'24/09',l:0,gasto:14.15},{d:'25/09',l:1,gasto:11.08},{d:'26/09',l:2,gasto:12.19},
+  {d:'27/09',l:0,gasto:18.45},{d:'28/09',l:2,gasto:13.70},{d:'29/09',l:0,gasto:14.17},{d:'30/09',l:1,gasto:13.32}
+];
+
+// ─── Datos octubre (21/09 al 05/10) ──────────────────────────────────────────
+const dailyOct=[
+  {d:'21/09',l:0,gasto:7.63},{d:'22/09',l:0,gasto:6.72},{d:'23/09',l:1,gasto:12.78},{d:'24/09',l:0,gasto:14.15},
+  {d:'25/09',l:1,gasto:11.08},{d:'26/09',l:2,gasto:12.19},{d:'27/09',l:0,gasto:18.45},{d:'28/09',l:2,gasto:13.70},
+  {d:'29/09',l:0,gasto:14.17},{d:'30/09',l:1,gasto:13.32},{d:'01/10',l:0,gasto:6.60},{d:'02/10',l:0,gasto:15.62},
+  {d:'03/10',l:1,gasto:8.83},{d:'04/10',l:2,gasto:18.19},{d:'05/10',l:0,gasto:6.24}
+];
+
+// ─── Septiembre: evolución diaria ────────────────────────────────────────────
+new Chart(document.getElementById('ewEvolucion'),{
+  data:{labels:dailySep.map(d=>d.d),
+    datasets:[
+      {type:'bar',label:'Inversión diaria ($)',data:dailySep.map(d=>d.gasto),backgroundColor:'rgba(74,64,212,0.75)',borderRadius:4,yAxisID:'y'},
+      {type:'line',label:'Leads diarios',data:dailySep.map(d=>d.l),borderColor:ACCENT,backgroundColor:ACCENT,borderWidth:2.5,pointRadius:5,pointBackgroundColor:ACCENT,tension:0.3,yAxisID:'y2'}
+    ]},
+  options:{responsive:true,maintainAspectRatio:true,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{position:'top',labels:{color:TEXT,boxWidth:12,padding:14}},
+      tooltip:{...tt,callbacks:{label:c=>c.dataset.label==='Leads diarios'?' '+c.raw+' leads':' '+usd(c.raw)}}},
+    scales:{x:{grid:{display:false},ticks:{maxRotation:45,color:'#64748b'}},
+      y:{position:'left',grid:{color:grid},title:{display:true,text:'Inversión diaria (USD)',color:'#4A40D4'},ticks:{color:'#4A40D4',callback:v=>'$'+v}},
+      y2:{type:'linear',position:'right',title:{display:true,text:'Leads',color:'#059669'},grid:{drawOnChartArea:false},ticks:{color:'#059669',stepSize:1}}}}
+});
+
+// ─── Septiembre: CPL por anuncio (horizontal) ────────────────────────────────
+new Chart(document.getElementById('ewAdsCPL'),{
+  type:'bar',
+  data:{labels:[['Dirigir a Ciegas','(Decisiones c/ Datos)'],['Tamaño Real de tu','Cartera (Pólizas)']],
+    datasets:[{label:'CPL (USD)',data:[17.39,19.08],backgroundColor:[ACCENT,ACCENT4],borderRadius:8}]},
+  options:{indexAxis:'y',responsive:true,
+    plugins:{legend:{display:false},tooltip:{...tt,callbacks:{label:c=>' '+usd(c.raw)+' por lead'}}},
+    scales:{x:{grid:{color:grid},ticks:{callback:v=>'$'+v}},y:{grid:{display:false}}}}
+});
+
+// ─── Septiembre: leads por estado (horizontal) ───────────────────────────────
+const regionData=[['Jalisco',5,18.69],['Distrito Federal',2,15.25],['Nuevo León',1,8.84],['Baja California',1,2.95],['San Luis Potosí',1,1.21]];
+new Chart(document.getElementById('ewRegion'),{
+  type:'bar',
+  data:{labels:regionData.map(r=>r[0]),
+    datasets:[{label:'Leads',data:regionData.map(r=>r[1]),backgroundColor:regionData.map(r=>r[2]<15?'rgba(16,185,129,0.75)':r[2]<25?'rgba(74,64,212,0.7)':'rgba(245,158,11,0.7)'),borderRadius:6}]},
+  options:{indexAxis:'y',responsive:true,
+    plugins:{legend:{display:false},tooltip:{...tt,callbacks:{label:c=>' '+c.raw+' lead(s) · CPL '+usd(regionData[c.dataIndex][2])}}},
+    scales:{x:{grid:{color:grid},ticks:{stepSize:1}},y:{grid:{display:false}}}}
+});
+
+// ─── Septiembre: últimos 14 días (14/09 al 27/09) ────────────────────────────
+const last14Sep=dailySep.slice(7,21);
+new Chart(document.getElementById('ew14d'),{
+  type:'bar',
+  data:{labels:last14Sep.map(d=>d.d),
+    datasets:[{label:'Leads diarios',data:last14Sep.map(d=>d.l),
+      backgroundColor:last14Sep.map((d,i)=>i<7?'rgba(217,119,6,0.55)':'rgba(16,185,129,0.75)'),
+      borderColor:last14Sep.map((d,i)=>i<7?ACCENT3:ACCENT),borderWidth:1.5,borderRadius:6}]},
+  options:{responsive:true,
+    plugins:{legend:{display:false},
+      tooltip:{...tt,callbacks:{title:c=>c[0].label,label:c=>' '+c.raw+' leads · '+(c.dataIndex<7?'semana previa':'semana actual')}}},
+    scales:{x:{grid:{display:false},ticks:{maxRotation:45}},
+      y:{grid:{color:grid},ticks:{stepSize:1},title:{display:true,text:'Leads',color:'#059669'}}}}
+});
+
+// ─── Octubre (se inicializa al abrir la pestaña) ─────────────────────────────
+function initOct(){
+  new Chart(document.getElementById('ewEvolucionOct'),{
+    data:{labels:dailyOct.map(d=>d.d),
+      datasets:[
+        {type:'bar',label:'Inversión diaria ($)',data:dailyOct.map(d=>d.gasto),backgroundColor:'rgba(74,64,212,0.75)',borderRadius:4,yAxisID:'y'},
+        {type:'line',label:'Leads diarios',data:dailyOct.map(d=>d.l),borderColor:ACCENT,backgroundColor:ACCENT,borderWidth:2.5,pointRadius:5,pointBackgroundColor:ACCENT,tension:0.3,yAxisID:'y2'}
+      ]},
+    options:{responsive:true,maintainAspectRatio:true,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'top',labels:{color:TEXT,boxWidth:12,padding:14}},
+        tooltip:{...tt,callbacks:{label:c=>c.dataset.label==='Leads diarios'?' '+c.raw+' leads':' '+usd(c.raw)}}},
+      scales:{x:{grid:{display:false},ticks:{maxRotation:45,color:'#64748b'}},
+        y:{position:'left',grid:{color:grid},title:{display:true,text:'Inversión diaria (USD)',color:'#4A40D4'},ticks:{color:'#4A40D4',callback:v=>'$'+v}},
+        y2:{type:'linear',position:'right',title:{display:true,text:'Leads',color:'#059669'},grid:{drawOnChartArea:false},ticks:{color:'#059669',stepSize:1}}}}
+  });
+
+  const last14Oct=dailyOct.slice(0,14);
+  new Chart(document.getElementById('ew14dOct'),{
+    type:'bar',
+    data:{labels:last14Oct.map(d=>d.d),
+      datasets:[{label:'Leads diarios',data:last14Oct.map(d=>d.l),
+        backgroundColor:last14Oct.map((d,i)=>i<7?'rgba(217,119,6,0.55)':'rgba(16,185,129,0.75)'),
+        borderColor:last14Oct.map((d,i)=>i<7?ACCENT3:ACCENT),borderWidth:1.5,borderRadius:6}]},
+    options:{responsive:true,
+      plugins:{legend:{display:false},
+        tooltip:{...tt,callbacks:{title:c=>c[0].label,label:c=>' '+c.raw+' leads · '+(c.dataIndex<7?'semana previa':'semana actual')}}},
+      scales:{x:{grid:{display:false},ticks:{maxRotation:45}},
+        y:{grid:{color:grid},ticks:{stepSize:1},title:{display:true,text:'Leads',color:'#059669'}}}}
+  });
+}
+</script>
+
+</body>
+</html>
