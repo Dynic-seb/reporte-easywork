@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte Meta Ads — Easywork · Octubre 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=Poppins:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg:#f1f0fb; --surface:#ffffff; --surface2:#f6f5fc;
+    --border:rgba(0,0,0,0.08);
+    --accent:#10b981; --accent2:#ef4444; --accent3:#f59e0b; --accent4:#4A40D4;
+    --text:#0f172a; --muted:#64748b;
+    --good:#059669; --warn:#d97706; --bad:#dc2626;
+    --purple:#4A40D4; --teal:#06b6d4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;}
+
+  /* HEADER */
+  .header{padding:44px 48px 36px;background:linear-gradient(135deg,#0B0730 0%,#4A40D4 65%,#6C63FF 100%);display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;}
+  .header-tag{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.65);margin-bottom:8px;}
+  .header-title{font-family:'DM Serif Display',serif;font-size:36px;line-height:1.1;color:#fff;}
+  .header-subtitle{color:rgba(255,255,255,0.65);font-size:14px;margin-top:6px;}
+  .header-date{text-align:right;color:rgba(255,255,255,0.65);font-size:13px;line-height:1.8;}
+  .header-date strong{color:#fff;display:block;font-size:15px;font-weight:500;}
+
+  /* LAYOUT */
+  .main{padding:40px 48px;max-width:1400px;}
+
+  .section-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--text);margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:10px;}
+  .section-title::before{content:'';display:inline-block;width:4px;height:20px;background:var(--accent4);border-radius:2px;}
+  .section{margin-bottom:48px;}
+  .section-note{font-size:12.5px;color:var(--muted);margin:-10px 0 20px;}
+
+  /* KPIs */
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;margin-bottom:48px;}
+  .kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;position:relative;overflow:hidden;transition:box-shadow .2s;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+  .kpi-card:hover{box-shadow:0 6px 20px rgba(0,0,0,0.1);}
+  .kpi-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent-color,var(--accent4));border-radius:14px 14px 0 0;}
+  .kpi-label{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+  .kpi-value{font-family:'Poppins',sans-serif;font-weight:700;font-size:32px;color:var(--text);line-height:1;margin-bottom:6px;}
+  .kpi-sub{font-size:12px;color:var(--muted);}
+  .kpi-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;margin-top:8px;}
+  .badge-good{background:rgba(16,185,129,0.1);color:#059669;}
+  .badge-warn{background:rgba(245,158,11,0.12);color:#d97706;}
+  .badge-bad{background:rgba(239,68,68,0.1);color:#dc2626;}
+  .badge-neutral{background:rgba(74,64,212,0.1);color:#4A40D4;}
+
+  /* CHARTS */
+  .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+  .chart-grid.single{grid-template-columns:1fr;}
+  .chart-grid.three{grid-template-columns:2fr 1fr;align-items:start;}
+  .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+  .chart-card h3{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px;}
+  .chart-card canvas{max-height:280px;}
+
+  /* TABLES */
+  .data-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .data-table th{text-align:left;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:10px 12px;border-bottom:2px solid var(--border);}
+  .data-table td{padding:12px 12px;border-bottom:1px solid rgba(0,0,0,0.05);color:var(--text);vertical-align:middle;}
+  .data-table tr:last-child td{border-bottom:none;}
+  .data-table tr:hover td{background:rgba(74,64,212,0.04);}
+  .num{font-family:'Poppins',sans-serif;font-variant-numeric:tabular-nums;font-weight:500;}
+  .cpl-good{color:#059669;font-weight:600;}
+  .cpl-mid{color:#d97706;font-weight:600;}
+  .cpl-bad{color:#dc2626;font-weight:600;}
+
+  /* CAMPAIGNS */
+  .campaign-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px;margin-bottom:20px;}
+  .campaign-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+  .campaign-card h4{font-size:13px;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.4;padding-bottom:12px;border-bottom:1px solid var(--border);}
+  .campaign-stat-row{display:flex;justify-content:space-between;gap:14px;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.04);}
+  .campaign-stat-row:last-child{border-bottom:none;}
+  .campaign-stat-row .label{color:var(--muted);}
+  .campaign-stat-row .value{font-weight:500;text-align:right;}
+
+  /* INSIGHTS */
+  .insight-box{background:rgba(74,64,212,0.05);border:1px solid rgba(74,64,212,0.2);border-radius:10px;padding:14px 18px;margin-top:16px;font-size:13px;color:var(--text);line-height:1.6;}
+  .insight-box strong{color:#4A40D4;}
+  .insight-warn{background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.25);}
+  .insight-warn strong{color:#d97706;}
+  .insight-bad{background:rgba(239,68,68,0.05);border-color:rgba(239,68,68,0.2);}
+  .insight-bad strong{color:#dc2626;}
+  .insight-good{background:rgba(16,185,129,0.06);border-color:rgba(16,185,129,0.25);}
+  .insight-good strong{color:#059669;}
+
+  /* PILLS */
+  .camp-pill{display:inline-block;padding:2px 8px;border-radius:6px;background:rgba(74,64,212,0.1);color:#4A40D4;font-size:10px;font-weight:600;margin-top:3px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .adset-pill{display:inline-block;padding:2px 8px;border-radius:6px;background:rgba(0,0,0,0.06);color:var(--muted);font-size:10px;font-weight:500;margin-top:2px;}
+
+  /* ALERT */
+  .alert-banner{background:rgba(74,64,212,0.06);border:1px solid rgba(74,64,212,0.25);border-radius:14px;padding:20px 24px;margin-bottom:32px;display:flex;gap:16px;align-items:flex-start;}
+  .alert-icon{font-size:22px;line-height:1;}
+  .alert-body h4{font-size:14px;font-weight:600;color:#4A40D4;margin-bottom:6px;}
+  .alert-body p{font-size:13px;color:var(--muted);line-height:1.6;}
+  .alert-body strong{color:var(--text);}
+
+  /* COMPARE TABLE */
+  .compare-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+  .compare-card h4{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;}
+  .compare-row{display:grid;grid-template-columns:1.6fr 1fr 1fr 100px;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid rgba(0,0,0,0.05);}
+  .compare-row:last-child{border-bottom:none;}
+  .compare-label{font-size:12px;color:var(--muted);}
+  .compare-v1{font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;white-space:nowrap;text-align:center;}
+  .compare-v2{font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;white-space:nowrap;text-align:center;}
+  .trend-arrow{font-family:'Poppins',sans-serif;font-size:11px;padding:3px 8px;border-radius:4px;white-space:nowrap;font-weight:600;justify-self:center;}
+  .arrow-bad{background:rgba(239,68,68,0.1);color:#dc2626;}
+  .arrow-good{background:rgba(16,185,129,0.1);color:#059669;}
+  .arrow-warn{background:rgba(245,158,11,0.12);color:#d97706;}
+  .compare-header-row{display:grid;grid-template-columns:1.6fr 1fr 1fr 100px;gap:8px;padding:0 0 8px;border-bottom:2px solid var(--border);margin-bottom:4px;}
+  .compare-header-row span{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);text-align:center;}
+  .compare-header-row span:first-child{text-align:left;}
+
+  @media(max-width:768px){
+    .header,.main{padding:24px;}
+    .chart-grid,.chart-grid.three{grid-template-columns:1fr !important;}
+    .kpi-grid{grid-template-columns:repeat(2,1fr);}
+    .compare-row,.compare-header-row{grid-template-columns:1fr 1fr;}
+  }
+
+  /* ACTIONS */
+  .action-list{display:grid;gap:12px;}
+  .action-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;display:flex;gap:16px;align-items:flex-start;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+  .action-num{flex-shrink:0;width:26px;height:26px;border-radius:8px;background:rgba(74,64,212,0.12);color:#4A40D4;font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+  .action-item h5{font-size:13.5px;font-weight:600;margin-bottom:4px;}
+  .action-item p{font-size:12.5px;color:var(--muted);line-height:1.6;}
+
+  /* WEEK HERO */
+  .week-hero{background:linear-gradient(135deg,#1e1b4b 0%,#4A40D4 55%,#818cf8 100%);border-radius:16px;padding:28px 32px;margin-bottom:22px;color:#fff;}
+  .week-hero .wh-tag{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.7);margin-bottom:8px;}
+  .week-hero h3{font-family:'DM Serif Display',serif;font-size:26px;line-height:1.25;margin-bottom:10px;color:#fff;font-weight:400;}
+  .week-hero p{font-size:13.5px;line-height:1.65;color:rgba(255,255,255,0.9);max-width:900px;}
+  .week-hero strong{color:#fff;font-weight:600;}
+  .wh-stats{display:flex;gap:34px;flex-wrap:wrap;margin-top:22px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.25);}
+  .wh-stat .v{font-family:'Poppins',sans-serif;font-weight:700;font-size:30px;line-height:1.1;color:#fff;}
+  .wh-stat .l{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.75);margin-top:4px;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-tag">dynic · Meta Ads Report</div>
+    <h1 class="header-title">Easywork</h1>
+    <p class="header-subtitle">Reporte mensual · Octubre 2026</p>
+  </div>
+  <div class="header-date">
+    <strong>Mes en curso</strong>
+    1 – 27 octubre 2026<br>Generado por dynic
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="alert-banner">
+    <div class="alert-icon">📊</div>
+    <div class="alert-body">
+      <h4>Octubre: Landing generó más leads de los que mostraba Meta</h4>
+      <p>Por la cuenta pasaron <strong>5 campañas</strong> en octubre: el formulario original, dos pruebas de embudo (Landing y Form Abierto), un tráfico de calentamiento a Instagram, y desde el 20/10 el test vigente, <strong>Form - LAL vs ADV+</strong>. En total se invirtieron <strong>$389.17 USD</strong> y se generaron <strong>16 leads</strong> (8 reportados por Meta + 8 confirmados en el CRM que vienen de Landing, cuyo evento de conversión no se está reportando a Meta correctamente), con un costo por lead de <strong>$19.79</strong> en las tres campañas que convierten. La única etapa realmente sin conversión fue la del 15 al 19 de octubre, mientras se probaban Form Abierto y Tráfico IG; Landing sostuvo el mejor ritmo del mes.</p>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--accent-color:#4A40D4">
+      <div class="kpi-label">Leads generados</div>
+      <div class="kpi-value">16</div>
+      <div class="kpi-sub">1–27 oct · 8 reportados por Meta + 8 del CRM (Landing)</div>
+      <div class="kpi-badge badge-neutral">0.59 leads por día</div>
+    </div>
+    <div class="kpi-card" style="--accent-color:#4A40D4">
+      <div class="kpi-label">Presupuesto invertido</div>
+      <div class="kpi-value">$389.17</div>
+      <div class="kpi-sub">USD · 5 campañas en el mes</div>
+      <div class="kpi-badge badge-neutral">3 de conversión + 2 de prueba</div>
+    </div>
+    <div class="kpi-card" style="--accent-color:#10b981">
+      <div class="kpi-label">Costo por lead</div>
+      <div class="kpi-value">$19.79</div>
+      <div class="kpi-sub">USD · Formulario + Landing + LAL vs ADV+</div>
+      <div class="kpi-badge badge-neutral">$14.35 en la mejor etapa</div>
+    </div>
+    <div class="kpi-card" style="--accent-color:#3b82f6">
+      <div class="kpi-label">CTR (clics en el enlace)</div>
+      <div class="kpi-value">1.48%</div>
+      <div class="kpi-sub">1–27 oct · 382 clics de 25.804 impresiones</div>
+      <div class="kpi-badge badge-neutral">formulario + landing, sin tráfico IG</div>
+    </div>
+    <div class="kpi-card" style="--accent-color:#06b6d4">
+      <div class="kpi-label">Impresiones</div>
+      <div class="kpi-value">34.039</div>
+      <div class="kpi-sub">Alcance acumulado del mes</div>
+    </div>
+    <div class="kpi-card" style="--accent-color:#3b82f6">
+      <div class="kpi-label">Clics totales</div>
+      <div class="kpi-value">533</div>
+      <div class="kpi-sub">1–27 oct · todas las campañas</div>
+    </div>
+  </div>
+
+  <!-- ETAPAS -->
+  <div class="section">
+    <div class="section-title">Las cuatro etapas de octubre</div>
+    <div class="campaign-grid">
+      <div class="campaign-card">
+        <h4>Etapa 1 — Formulario original en soledad <span class="camp-pill">1 al 7 de octubre</span></h4>
+        <div class="campaign-stat-row"><span class="label">Leads</span><span class="value">4</span></div>
+        <div class="campaign-stat-row"><span class="label">Inversión</span><span class="value">$88.88 USD</span></div>
+        <div class="campaign-stat-row"><span class="label">CPL</span><span class="value cpl-good">$22.22 USD</span></div>
+        <div class="campaign-stat-row"><span class="label">Clics</span><span class="value">35</span></div>
+      </div>
+      <div class="campaign-card">
+        <h4>Etapa 2 — Se suma Landing <span class="camp-pill">8 al 14 de octubre</span></h4>
+        <div class="campaign-stat-row"><span class="label">Leads</span><span class="value">7</span></div>
+        <div class="campaign-stat-row"><span class="label">Inversión</span><span class="value">$100.45 USD</span></div>
+        <div class="campaign-stat-row"><span class="label">CPL</span><span class="value cpl-good">$14.35 USD</span></div>
+        <div class="campaign-stat-row"><span class="label">Clics</span><span class="value">195</span></div>
+        <div class="campaign-stat-row"><span class="label">Campañas activas</span><span class="value">Formulario + Landing</span></div>
+      </div>
+      <div class="campaign-card">
+        <h4>Etapa 3 — Se prueban Form Abierto y Tráfico IG <span class="camp-pill">15 al 19 de octubre</span></h4>
+        <div class="campaign-stat-row"><span class="label">Leads</span><span class="value">0</span></div>
+        <div class="campaign-stat-row"><span class="label">Inversión</span><span class="value">$107.14 USD</span></div>
+        <div class="campaign-stat-row"><span class="label">Clics</span><span class="value">236</span></div>
+        <div class="campaign-stat-row"><span class="label">Campañas activas</span><span class="value">Form Abierto + Landing + Tráfico IG</span></div>
+      </div>
+      <div class="campaign-card">
+        <h4>Etapa 4 — Arranca Form - LAL vs ADV+ <span class="camp-pill">20 al 27 de octubre</span></h4>
+        <div class="campaign-stat-row"><span class="label">Leads</span><span class="value">5</span></div>
+        <div class="campaign-stat-row"><span class="label">Inversión</span><span class="value">$92.70 USD</span></div>
+        <div class="campaign-stat-row"><span class="label">CPL</span><span class="value cpl-mid">$18.54 USD</span></div>
+        <div class="campaign-stat-row"><span class="label">Clics</span><span class="value">67</span></div>
+      </div>
+    </div>
+    <div class="insight-box">
+      <strong>La etapa 2 tuvo el mejor costo por lead del mes ($14.35)</strong>, gracias a los 7 leads que generó Landing entre el 8 y el 14 de octubre — Meta no los reportó en su columna de resultados, pero sí están confirmados en el CRM. La única etapa sin conversión real fue la 3 (15 al 19 de octubre, 5 días), mientras se probaban Form Abierto y Tráfico IG sin que ninguno de los dos convirtiera.
+    </div>
+  </div>
+
+  <!-- 5 CAMPAÑAS -->
+  <div class="section">
+    <div class="section-title">Las 5 campañas del mes</div>
+    <div class="campaign-grid">
+      <div class="campaign-card">
+        <h4>TOFU - [Form][Primer Prueba - Dolores][SEP] <span class="camp-pill">Formulario original · activa 1–15 oct</span></h4>
+        <div class="campaign-stat-row"><span class="label">Leads</span><span class="value">4</span></div>
+        <div class="campaign-stat-row"><span class="label">Inversión</span><span class="value">$146.04 USD</span></div>
+        <div class="campaign-stat-row"><span class="label">CPL</span><span class="value cpl-mid">$36.51 USD</span></div>
+        <div class="campaign-stat-row"><span class="label">Clics / CTR</span><span class="value">65 · 0.67%</span></div>
+        <div class="campaign-stat-row"><span class="label">CPC</span><span class="value">$2.25</span></div>
+      </div>
+      <div class="campaign-card">
+        <h4>TOFU - [Landing][IMG vs VID][OCT] <span class="adset-pill">Landing page · activa 8–20 oct</span></h4>
+        <div class="campaign-stat-row"><span class="label">Leads</span><span class="value">8</span></div>
+        <div class="campaign-stat-row"><span class="label">Inversión</span><span class="value">$84.79 USD</span></div>
+        <div class="campaign-stat-row"><span class="label">CPL</span><span class="value cpl-good">$10.60 USD</span></div>
+        <div class="campaign-stat-row"><span class="label">Clics / CTR</span><span class="value cpl-good">247 · 4.04%</span></div>
+        <div class="campaign-stat-row"><span class="label">CPC</span><span class="value cpl-good">$0.34</span></div>
+        <div class="campaign-stat-row"><span class="label">Mejor anuncio (por clics)</span><span class="value">Gestión Centralizada · 152 clics</span></div>
+      </div>
+      <div class="campaign-card">
+        <h4>TOFU - [Form Abierto] - OCT <span class="adset-pill">Sin filtro de colaboradores · activa 15–20 oct</span></h4>
+        <div class="campaign-stat-row"><span class="label">Leads</span><span class="value">0</span></div>
+        <div class="campaign-stat-row"><span class="label">Inversión</span><span class="value">$65.54 USD</span></div>
+        <div class="campaign-stat-row"><span class="label">Clics / CTR</span><span class="value">19 · 0.64%</span></div>
+        <div class="campaign-stat-row"><span class="label">CPC</span><span class="value">$3.45</span></div>
+      </div>
+      <div class="campaign-card">
+        <h4>Tráfico IG - OCT <span class="adset-pill">Calentamiento de cuenta · activa 16–20 oct</span></h4>
+        <div class="campaign-stat-row"><span class="label">Leads</span><span class="value">0</span></div>
+        <div class="campaign-stat-row"><span class="label">Inversión</span><span class="value">$7.01 USD</span></div>
+        <div class="campaign-stat-row"><span class="label">Clics / CTR</span><span class="value">151 · 1.83%</span></div>
+        <div class="campaign-stat-row"><span class="label">CPC</span><span class="value">$0.05</span></div>
+      </div>
+      <div class="campaign-card">
+        <h4>Form - LAL vs ADV+ <span class="camp-pill">Test vigente · activa desde el 20 oct</span></h4>
+        <div class="campaign-stat-row"><span class="label">Leads</span><span class="value">4</span></div>
+        <div class="campaign-stat-row"><span class="label">Inversión</span><span class="value">$85.79 USD</span></div>
+        <div class="campaign-stat-row"><span class="label">CPL</span><span class="value cpl-mid">$21.45 USD</span></div>
+        <div class="campaign-stat-row"><span class="label">Clics / CTR</span><span class="value">51 · 0.73%</span></div>
+      </div>
+    </div>
+    <div class="insight-box">
+      <strong>Landing es, hasta ahora, el embudo más eficiente de la cuenta</strong> — $10.60 por lead, menos de la mitad que el formulario original. El dato todavía no aparece en el reporte nativo de Meta porque el evento de conversión de la landing no se está atribuyendo correctamente; los 8 leads están confirmados en el CRM. El formulario original termina el mes con un CPL de $36.51 porque ese promedio incluye sus dos últimas semanas sin leads — mirando sólo su primera semana en soledad, fue de $22.22, un ritmo similar al que tiene ahora Form - LAL vs ADV+ ($21.45).
+    </div>
+  </div>
+
+  <!-- LAL VS ADV+ -->
+  <div class="section">
+    <div class="section-title">Form - LAL vs ADV+: el test vigente</div>
+    <div class="campaign-grid">
+      <div class="campaign-card">
+        <h4>LAL [2% form] - MX <span class="adset-pill">Público similar a quienes ya completaron el form</span></h4>
+        <div class="campaign-stat-row"><span class="label">Leads</span><span class="value">2</span></div>
+        <div class="campaign-stat-row"><span class="label">Inversión</span><span class="value">$46.92 USD</span></div>
+        <div class="campaign-stat-row"><span class="label">CPL</span><span class="value">$23.46 USD</span></div>
+        <div class="campaign-stat-row"><span class="label">Clics / CTR</span><span class="value">30 · 0.74%</span></div>
+      </div>
+      <div class="campaign-card">
+        <h4>[pyme+insurance][28-60] - Mexico <span class="adset-pill">Advantage+ por intereses y edad</span></h4>
+        <div class="campaign-stat-row"><span class="label">Leads</span><span class="value">2</span></div>
+        <div class="campaign-stat-row"><span class="label">Inversión</span><span class="value">$38.87 USD</span></div>
+        <div class="campaign-stat-row"><span class="label">CPL</span><span class="value">$19.44 USD</span></div>
+        <div class="campaign-stat-row"><span class="label">Clics / CTR</span><span class="value">21 · 0.72%</span></div>
+      </div>
+    </div>
+    <div class="insight-box">
+      Los dos conjuntos vienen parejos en resultados y costo — todavía no hay una diferencia clara que indique un ganador. Con 4 leads en total, conviene sostener la prueba unos días más antes de decidir si se corta alguno.
+    </div>
+  </div>
+
+  <!-- EVOLUCIÓN DIARIA -->
+  <div class="section">
+    <div class="section-title">Evolución diaria: inversión y leads</div>
+    <div class="chart-grid single">
+      <div class="chart-card">
+        <h3>Todas las campañas — 1 al 27 de octubre</h3>
+        <canvas id="ewEvolucionOct"></canvas>
+      </div>
+    </div>
+    <div class="insight-box">
+      La inversión diaria se mantuvo en un rango similar durante todo el mes (entre $0.86 y $25.48, el valor más bajo en el último día del corte). Los 16 leads se distribuyeron en casi todo el mes, con una sola excepción real: el tramo del 15 al 19 de octubre, cuando corrían Form Abierto, Landing (sus últimos días) y Tráfico IG sin generar ninguna conversión.
+    </div>
+  </div>
+
+  <!-- HALLAZGO: SEGMENTACIÓN POR TAMAÑO -->
+  <div class="section">
+    <div class="section-title">Observación del equipo: el filtro de colaboradores puede estar limitando el volumen</div>
+    <div class="insight-box insight-warn">
+      <strong>Esto es un análisis del equipo sobre las respuestas completas del formulario, no un dato de este export de Ads Manager</strong> (esa información vive en las respuestas del formulario, no en el reporte de rendimiento de anuncios). El equipo comparó los resultados del formulario que filtra por "más de 10-11 colaboradores" contra un formulario sin ese filtro, y encontró un volumen de resultados similar entre ambos — porque cerca del 90% de las promotorías que completan el formulario tienen entre 1 y 10 colaboradores. En otras palabras, el filtro actual está dejando afuera a la mayoría del público que sí está respondiendo. La recomendación del equipo es evaluar una estrategia que incluya también al cliente más chico, aprovechando que es un segmento escalable (se le puede vender más usuarios con el tiempo) en vez de limitarse exclusivamente a las promotorías de 10+.
+    </div>
+  </div>
+
+  <!-- PRÓXIMOS PASOS -->
+  <div class="section">
+    <div class="section-title">Próximos pasos</div>
+    <div class="action-list">
+      <div class="action-item">
+        <div class="action-num">1</div>
+        <div><h5>Darle un poco más de recorrido a Form - LAL vs ADV+</h5><p>Los dos conjuntos (LAL y Advantage+ por intereses) vienen parejos en CPL y CTR, con sólo 4 leads en total. Es poca muestra todavía para declarar un ganador — conviene sostener ambos unos días más.</p></div>
+      </div>
+      <div class="action-item">
+        <div class="action-num">2</div>
+        <div><h5>Resolver el tracking de conversión de Landing y evaluar reactivarla</h5><p>Landing generó 8 leads reales (confirmados en el CRM) con el mejor costo por lead del mes ($10.60), pero Meta no los está reportando en su columna de resultados. Prioridad: revisar el evento de conversión / CAPI de la landing para que quede bien atribuido, y evaluar volver a activarla ya que es, hasta ahora, el embudo más eficiente de la cuenta.</p></div>
+      </div>
+      <div class="action-item">
+        <div class="action-num">3</div>
+        <div><h5>Revisar el filtro de colaboradores</h5><p>Según el análisis del equipo, ~90% de quienes completan el formulario son promotorías de 1 a 10 colaboradores. Vale la pena correr una prueba sin ese filtro y medir si el costo por lead se sostiene, antes de rediseñar toda la segmentación.</p></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const ACCENT='#10b981', ACCENT2='#ef4444', ACCENT3='#f59e0b', ACCENT4='#4A40D4';
+const TEXT='#0f172a';
+Chart.defaults.color='#64748b';
+Chart.defaults.font.family="'Poppins', sans-serif";
+Chart.defaults.font.size=12;
+const grid='rgba(0,0,0,0.06)';
+const tt={backgroundColor:'#ffffff',borderColor:'rgba(0,0,0,0.1)',borderWidth:1,titleColor:TEXT,bodyColor:'#64748b',padding:10};
+const usd=v=>'$'+Number(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+// ─── Todas las campañas combinadas: diario 1-27 oct ──────────────────────────
+const dailyLabels=['01/10','02/10','03/10','04/10','05/10','06/10','07/10','08/10','09/10','10/10','11/10','12/10','13/10','14/10','15/10','16/10','17/10','18/10','19/10','20/10','21/10','22/10','23/10','24/10','25/10','26/10','27/10'];
+const dailyGasto=[6.6,15.62,8.83,18.19,12.97,12.71,13.96,11.76,11.6,10.42,15.05,19.14,16.14,16.34,23.6,19.47,15.84,25.48,22.75,19.74,10.94,16.26,12.59,7.48,16.79,8.04,0.86];
+const dailyLeads=[0,0,1,2,0,1,0,1,0,2,1,0,2,1,0,0,0,0,0,0,1,1,2,0,1,0,0];
+
+new Chart(document.getElementById('ewEvolucionOct'),{
+  data:{labels:dailyLabels,
+    datasets:[
+      {type:'bar',label:'Inversión diaria ($)',data:dailyGasto,backgroundColor:'rgba(74,64,212,0.75)',borderRadius:4,yAxisID:'y'},
+      {type:'line',label:'Leads diarios',data:dailyLeads,borderColor:ACCENT,backgroundColor:ACCENT,borderWidth:2.5,pointRadius:5,pointBackgroundColor:ACCENT,tension:0.3,yAxisID:'y2'}
+    ]},
+  options:{responsive:true,maintainAspectRatio:true,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{position:'top',labels:{color:TEXT,boxWidth:12,padding:14}},
+      tooltip:{...tt,callbacks:{label:c=>c.dataset.label==='Leads diarios'?' '+c.raw+' leads':' '+usd(c.raw)}}},
+    scales:{x:{grid:{display:false},ticks:{maxRotation:45,color:'#64748b'}},
+      y:{position:'left',grid:{color:grid},title:{display:true,text:'Inversión diaria (USD)',color:'#4A40D4'},ticks:{color:'#4A40D4',callback:v=>'$'+v}},
+      y2:{type:'linear',position:'right',title:{display:true,text:'Leads',color:'#059669'},grid:{drawOnChartArea:false},ticks:{color:'#059669',stepSize:1}}}}
+});
+</script>
+
+</body>
+</html>
